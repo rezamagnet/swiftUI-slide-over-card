@@ -1,20 +1,23 @@
 import SwiftUI
 
-
 @available(iOS 13.0, *)
 public struct SlideOverCard<Content> : View where Content : View {
     @Binding var defaultPosition : CardPosition
     @Binding var backgroundStyle: BackgroundStyle
+    private var radius: CGFloat
+    private var isHandleVisible: Bool
     var content: () -> Content
     
-    public init(_ position: Binding<CardPosition> = .constant(.middle), backgroundStyle: Binding<BackgroundStyle> = .constant(.solid), content: @escaping () -> Content) {
+    public init(_ position: Binding<CardPosition> = .constant(.middle), radius: CGFloat = 20, isHandleVisible: Bool = true, backgroundStyle: Binding<BackgroundStyle> = .constant(.solid), content: @escaping () -> Content) {
         self.content = content
         self._defaultPosition = position
         self._backgroundStyle = backgroundStyle
+        self.radius = radius
+        self.isHandleVisible = isHandleVisible
     }
      
     public var body: some View {
-        ModifiedContent(content: self.content(), modifier: Card(position: self.$defaultPosition, backgroundStyle: self.$backgroundStyle))
+        ModifiedContent(content: self.content(), modifier: Card(position: self.$defaultPosition, backgroundStyle: self.$backgroundStyle, radius: radius, isHandleVisible: isHandleVisible))
        }
 }
 
@@ -24,16 +27,17 @@ public enum BackgroundStyle {
 
 public enum CardPosition: CGFloat {
     
-    case bottom , middle, top
+//    case bottom
+    case middle, top
     
     func offsetFromTop() -> CGFloat {
         switch self {
-        case .bottom:
-            return UIScreen.main.bounds.height - 80
+//        case .bottom:
+//            return UIScreen.main.bounds.height - 80
         case .middle:
-            return UIScreen.main.bounds.height/1.8
+            return UIScreen.main.bounds.height*0.4
         case .top:
-            return 80
+            return 0
         }
     }
 }
@@ -62,14 +66,14 @@ enum DragState {
     }
 }
 
-
-
 struct Card: ViewModifier {
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @GestureState var dragState: DragState = .inactive
     @Binding var position : CardPosition
     @Binding var backgroundStyle: BackgroundStyle
     @State var offset: CGSize = CGSize.zero
+    var radius: CGFloat
+    var isHandleVisible: Bool
     
     var animation: Animation {
         Animation.interpolatingSpring(stiffness: 300.0, damping: 30.0, initialVelocity: 10.0)
@@ -108,10 +112,12 @@ struct Card: ViewModifier {
                     colorScheme == .dark ? Color.black : Color.white
                 }
 
-                Handle()
+                if isHandleVisible {
+                    Handle()
+                }
                 content.padding(.top, 15)
             }
-            .mask(RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .mask(RoundedRectangle(cornerRadius: radius, style: .continuous))
             .scaleEffect(x: 1, y: 1, anchor: .center)
         }
         .offset(y:  max(0, self.position.offsetFromTop() + self.dragState.translation.height))
@@ -138,7 +144,7 @@ struct Card: ViewModifier {
             lowerStop = .middle
         } else {
             higherStop = .middle
-            lowerStop = .bottom
+            lowerStop = .middle
         }
         
         // Determining whether drawer is closest to top or bottom
