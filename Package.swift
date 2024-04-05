@@ -1,4 +1,4 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.7
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "SlideOverCard",
     platforms: [
-        .iOS(.v13)
+        .iOS(.v16)
     ],
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
@@ -27,8 +27,5 @@ let package = Package(
         .testTarget(
             name: "SlideOverCardTests",
             dependencies: ["SlideOverCard"]),
-    ],
-    swiftLanguageVersions: [
-        .version("5.1")
     ]
 )

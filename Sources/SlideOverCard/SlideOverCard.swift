@@ -117,7 +117,7 @@ struct Card: ViewModifier {
                 }
                 content.padding(.top, 15)
             }
-            .mask(RoundedRectangle(cornerRadius: radius, style: .continuous))
+            .mask(UnevenRoundedRectangle(cornerRadii: .init(topLeading: radius, topTrailing: radius)))
             .scaleEffect(x: 1, y: 1, anchor: .center)
         }
         .offset(y:  max(0, self.position.offsetFromTop() + self.dragState.translation.height))
