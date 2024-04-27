@@ -120,7 +120,15 @@ struct Card: ViewModifier {
             .mask(UnevenRoundedRectangle(cornerRadii: .init(topLeading: radius, topTrailing: radius)))
             .scaleEffect(x: 1, y: 1, anchor: .center)
         }
-        .offset(y:  max(0, self.position.offsetFromTop() + self.dragState.translation.height))
+        .offset(
+            y:  max(
+                0,
+                min(
+                    self.position.offsetFromTop() + self.dragState.translation.height,
+                    self.position.offsetFromTop()
+                )
+            )
+        )
         .animation((self.dragState.isDragging ? nil : animation))
         .gesture(drag)
     }
